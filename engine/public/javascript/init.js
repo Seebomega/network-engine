@@ -6,7 +6,7 @@ $(function() {
         width = $(window).width(),
         height =  coef * $(window).height();
     var diameter =  coef * $(window).height();
-    var duration = 350;
+    var duration = 1500;
 
     var url_split = window.document.URL.split('/');
     var url = url_split[2];
@@ -22,15 +22,13 @@ $(function() {
 
     socket.on('arp-discover', function(data){
         console.log(data);
-        i = 0;
         root = data;
         root.x0 = height / 2;
         root.y0 = width/2;
         update(root, false);
     });
 
-    var i = 0,
-        root,
+    var root,
         _link,
         _node;
 
@@ -172,7 +170,7 @@ $(function() {
             .transition()
             .duration(duration)
             .attr("transform", function (d) {
-                return d.children? "rotate(90)":"rotate(-60)";
+                return d.children? "rotate(-90)":"rotate(-60)";
 
             });
 
@@ -213,7 +211,7 @@ $(function() {
             .transition()
             .duration(duration)
             .attr("transform", function (d) {
-                return d.children? "rotate(90)":"rotate(-60)";
+                return d.children? "rotate(-90)":"rotate(-60)";
             });
 
         _node.select("circle")
@@ -284,7 +282,7 @@ $(function() {
 
         // Update the nodes…
         var node = svg.selectAll("g.node")
-            .data(nodes, function(d) { return d.id || (d.id = ++i); });
+            .data(nodes, function(d) { return d.id || (d.id = md5(d.name + d.mac)); });
 
         var nodeExit = node.exit().remove();
         // Enter any new nodes at the parent's previous position.
