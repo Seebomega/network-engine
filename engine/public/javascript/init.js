@@ -3,9 +3,9 @@
  */
 $(function() {
     var coef = 0.95,
-        width = coef * $('body').width(),
-        height =  coef * $('body').height();
-    var diameter =  coef * $('body').height();
+        width = coef * $(window).width(),
+        height =  coef * $(window).height();
+    var diameter =  coef * $(window).height();
     var duration = 350;
 
     var url_split = window.document.URL.split('/');
@@ -73,7 +73,9 @@ $(function() {
         node.select("circle")
             .transition()
             .duration(duration)
-            .style("stroke", "#984ea3");
+            .style("stroke", function(d){
+                return d.connected?"#4daf4a":"#e41a1c";
+            });
 
     }
 
@@ -103,7 +105,9 @@ $(function() {
         _node.select("circle")
             .transition()
             .duration(duration)
-            .style("stroke", "#4daf4a")
+            .style("stroke", function(d){
+                return d.connected?"#4daf4a":"#e41a1c";
+            })
             .style('fill', function(d){
                 return d._children?"#166511":"#fff";
             });
