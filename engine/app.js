@@ -129,8 +129,10 @@ function merge_savediscover_scan(list_arp_scan, local_discover)
             if (!list_arp_scan[key][key1])
             {
                 list_arp_scan[key][key1] = local_discover[key][key1];
-                config_serv.iface_con[key] = true;
+                config_serv.iface_con[key1] = true;
             }
+            if (config_serv.remote_con[key])
+                config_serv.iface_con[key1] = true;
             for (var key2 in local_discover[key][key1])
             {
                 //HOST
