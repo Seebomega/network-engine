@@ -18,7 +18,7 @@ var cookieParser = require('cookie-parser');
 
 var config_serv = {
 	app: express(),
-	ip_serveur: '192.168.80.32',
+	ip_serveur: '0.0.0.0',
 	debug: true,
 	client: [],
 	port_http: 80,

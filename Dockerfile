@@ -10,7 +10,7 @@ RUN mkdir -p /data/engine && \
 
 ADD ./engine /data/engine
 
-EXPOSE 443
+EXPOSE 80
 
 RUN chown -R engine:engine /data/engine
 
