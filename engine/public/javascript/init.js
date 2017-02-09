@@ -282,7 +282,10 @@ $(function() {
 
         // Update the nodes…
         var node = svg.selectAll("g.node")
-            .data(nodes, function(d) { return d.id || (d.id = md5(d.name + d.mac)); });
+            .data(nodes, function(d) {
+                console.log(d);
+                return d.id || (d.id = md5(d.name + d.x + d.y));
+            });
 
         var nodeExit = node.exit().remove();
         // Enter any new nodes at the parent's previous position.
