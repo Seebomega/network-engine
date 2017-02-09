@@ -3,7 +3,7 @@
  */
 $(function() {
     var coef = 0.95,
-        width = coef * $(window).width(),
+        width = $(window).width(),
         height =  coef * $(window).height();
     var diameter =  coef * $(window).height();
     var duration = 350;
@@ -22,8 +22,11 @@ $(function() {
 
     socket.on('arp-discover', function(data){
         console.log(data);
+        i = 0;
         root = data;
-        update(root);
+        root.x0 = height / 2;
+        root.y0 = width/2;
+        update(root, false);
     });
 
     var i = 0,
@@ -32,49 +35,58 @@ $(function() {
         _node;
 
 
-    d3.selectAll("input").on("change", change);
-
-    function change() {
-        if (this.value === "radialtree")
-            transitionToRadialTree();
-        else if (this.value === "radialcluster")
-            transitionToRadialCluster();
-        else if (this.value === "tree")
-            transitionToTree();
-        else
-            transitionToCluster();
-    }
-
     function transitionToRadialTree() {
 
         var nodes = tree.nodes(root), // recalculate layout
-            links = tree.links(nodes),
-            link = d3.selectAll("path.link"),
-            node = d3.selectAll("g.node");
+            links = tree.links(nodes);
 
         svg.transition().duration(duration)
             .attr("transform", "translate(" + (width/2) + "," +
                 (height/2) + ")");
         // set appropriate translation (origin in middle of svg)
 
-        link.data(links)
+        _link.data(links)
             .transition()
             .duration(duration)
             .style("stroke", "#fc8d62")
             .attr("d", radialDiagonal); //get the new radial path
 
-        node.data(nodes)
+        _node.data(nodes)
             .transition()
             .duration(duration)
             .attr("transform", function(d) {
                 return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")";
             });
 
-        node.select("circle")
+        _node.select("text")
+            .transition()
+            .duration(duration)
+            .attr("transform", function(d) {
+                if(!d.children) {
+                    return (d.x < 180) ? "translate(0)" : "rotate(180)translate(-20)";
+                }
+                else{
+                    return (d.x > 180) ? "rotate(180)translate(0)":"translate(0)";
+                }
+            })
+            .attr("text-anchor", function(d) {
+                if(!d.children){
+                    return (d.x > 180) ? "end" : "start";
+                }
+                else{
+                    return "start";
+                }
+
+            });
+
+        _node.select("circle")
             .transition()
             .duration(duration)
             .style("stroke", function(d){
                 return d.connected?"#4daf4a":"#e41a1c";
+            })
+            .style('fill', function(d){
+                return d._children?"#000":"#fff";
             });
 
     }
@@ -102,6 +114,27 @@ $(function() {
                 return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")";
             });
 
+        _node.select("text")
+            .transition()
+            .duration(duration)
+            .attr("transform", function(d) {
+                if(!d.children) {
+                    return (d.x < 180) ? "translate(0)" : "rotate(180)translate(-20)";
+                }
+                else{
+                    return (d.x > 180) ? "rotate(180)translate(0)":"translate(0)";
+                }
+            })
+            .attr("text-anchor", function(d) {
+                if(!d.children){
+                    return (d.x > 180) ? "end" : "start";
+                }
+                else{
+                    return "start";
+                }
+
+            });
+
         _node.select("circle")
             .transition()
             .duration(duration)
@@ -109,7 +142,7 @@ $(function() {
                 return d.connected?"#4daf4a":"#e41a1c";
             })
             .style('fill', function(d){
-                return d._children?"#166511":"#fff";
+                return d._children?"#000":"#fff";
             });
 
     }
@@ -132,20 +165,26 @@ $(function() {
             .transition()
             .duration(duration)
             .attr("transform", function (d) {
-                return "translate(" + d.y + "," + d.x + ")";
+                return "translate(" + d.x + "," + d.y + ")";
             });
 
         _node.select("text")
             .transition()
             .duration(duration)
-            .attr("transform", function () {
-                return "rotate(0)";
+            .attr("transform", function (d) {
+                return d.children? "rotate(90)":"rotate(-60)";
+
             });
 
         _node.select("circle")
             .transition()
             .duration(duration)
-            .style("stroke", "#377eb8");
+            .style("stroke", function(d){
+                return d.connected?"#4daf4a":"#e41a1c";
+            })
+            .style('fill', function(d){
+                return d._children?"#000":"#fff";
+            });
 
     }
 
@@ -167,43 +206,50 @@ $(function() {
             .transition()
             .duration(duration)
             .attr("transform", function (d) {
-                return "translate(" + d.y + "," + d.x + ")";
+                return "translate(" + d.x + "," + d.y+ ")";
             });
 
         _node.select("text")
             .transition()
             .duration(duration)
-            .attr("transform", function () {
-                return "rotate(0)";
+            .attr("transform", function (d) {
+                return d.children? "rotate(90)":"rotate(-60)";
             });
 
         _node.select("circle")
             .transition()
             .duration(duration)
-            .style("stroke", "#e41a1c");
+            .style("stroke", function(d){
+                return d.connected?"#4daf4a":"#e41a1c";
+            })
+            .style('fill', function(d){
+                return d._children?"#000":"#fff";
+            });
 
     }
 
 
     var tree = d3.layout.tree()
         .size([360, (diameter / 2) - 80])
-        .separation(function(a, b) { return (a.parent == b.parent ? 1 : 10) / a.depth; });
+        .separation(function(a, b) {
+            return 50;
+        });
 
     var diagonalcluster = d3.svg.diagonal()
         .projection(function (d) {
-            return [d.y, d.x];
+            return [d.x, d.y];
         });
 
     var cluster = d3.layout.cluster()
-        .size([height, width-120]);
+        .size([width-70, height-10]);
 
     var radialTree = d3.layout.tree()
-        .size([height, width-120]);
+        .size([width-70, height-10]);
 
     var radialCluster = d3.layout.cluster()
         .size([360, (diameter / 2) - 80 ])
         .separation(function(a, b) {
-            return (a.parent == b.parent ? 1 : 2) / a.depth;
+            return 50;
         });
 
     var radialDiagonal = d3.svg.diagonal.radial()
@@ -222,9 +268,12 @@ $(function() {
     root.y0 = width/2;
 
 //root.children.forEach(collapse); // start with all children collapsed
-    update(root);
+    update(root, false);
+    d3.selectAll("input").on("change", function(){
+        update(root , true);
+    });
 
-    function update(source) {
+    function update(source, updateText) {
 
         // Compute the new tree layout.
         var nodes = tree.nodes(root),
@@ -244,6 +293,13 @@ $(function() {
             //.attr("transform", function(d) { return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; })
             .on("click", click);
 
+        if(updateText){
+            node.selectAll("text")
+                .attr("transform", "rotate(0)translate(0)")
+                .attr("text-anchor", "start");
+        }
+
+
         nodeEnter.append("circle")
             .attr("r", 6)
             .style("fill", function(d) { return d._children ? "blue" : "#fff"; })
@@ -253,7 +309,6 @@ $(function() {
             .attr("x", 10)
             .attr("dy", ".35em")
             .attr("text-anchor", "start")
-            //.attr("transform", function(d) { return d.x < 180 ? "translate(0)" : "rotate(180)translate(-" + (d.name.length * 8.5)  + ")"; })
             .text(function(d) { return d.name; })
             .style("fill-opacity", 1);
 
@@ -267,8 +322,11 @@ $(function() {
         link.enter().insert("path", "g")
             .attr("class", "link")
             .attr("d", function(d) {
-                var o = {x: source.x0, y: source.y0};
+                var o = {x: source.x, y: source.y};
                 return diagonalcluster({source: o, target: o});
+            })
+            .style("stroke-width", function(d){
+                return (1/(d.source.depth+1))*3 + 'px';
             });
 
 
@@ -297,7 +355,7 @@ $(function() {
             d._children = null;
         }
 
-        update(d);
+        update(d, false);
     }
 
 // Collapse nodes

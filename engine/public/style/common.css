@@ -7,7 +7,6 @@ label {
 }
 .node circle {
     fill: #fff;
-    stroke: steelblue;
     stroke-width: 1.5px;
 }
 .node {
@@ -16,5 +15,4 @@ label {
 .link {
     fill: none;
     stroke: tan;
-    stroke-width: 1.5px;
 }
