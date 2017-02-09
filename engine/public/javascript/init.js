@@ -278,13 +278,12 @@ $(function() {
             links = tree.links(nodes);
 
         // Normalize for fixed-depth.
-        nodes.forEach(function(d) { d.y = d.depth * 80; });
+        nodes.forEach(function(d) { d.y = d.depth * 50; });
 
         // Update the nodes…
         var node = svg.selectAll("g.node")
             .data(nodes, function(d) {
-                console.log(d);
-                return d.id || (d.id = md5(d.name + d.x + d.y));
+                return d.id || (d.id = md5(d.name + parseInt(d.x) + parseInt(d.y)));
             });
 
         var nodeExit = node.exit().remove();
