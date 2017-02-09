@@ -99,7 +99,7 @@ function format_data_to_save(list_arp_scan, connected)
             {
                 //HOST
                 list_arp_scan.children[key].children[key1].children[key2].connected = connected;
-                save_format[list_arp_scan.children[key].name][list_arp_scan.children[key].children[key1].name][list_arp_scan.children[key].children[key1].children[key2].ip] =list_arp_scan.children[key].children[key1].children[key2];
+                save_format[list_arp_scan.children[key].name][list_arp_scan.children[key].children[key1].name][list_arp_scan.children[key].children[key1].children[key2].mac] = list_arp_scan.children[key].children[key1].children[key2];
             }
         } 
     }
@@ -113,19 +113,27 @@ function format_data_to_save(list_arp_scan, connected)
 
 function merge_savediscover_scan(list_arp_scan, local_discover)
 {
-    //REMOTE
+    config_serv.remote_con = {};
+    config_serv.iface_con = {};
     for (var key in local_discover)
     {
-        //INTERFACE
+        //REMOTE
         if (!list_arp_scan[key])
+        {
             list_arp_scan[key] = local_discover[key];
+            config_serv.remote_con[key] = true;
+        }
         for (var key1 in local_discover[key])
         {
-            //HOST
+            //INTERFACE
             if (!list_arp_scan[key][key1])
+            {
                 list_arp_scan[key][key1] = local_discover[key][key1];
+                config_serv.iface_con[key] = true;
+            }
             for (var key2 in local_discover[key][key1])
             {
+                //HOST
                 if (!list_arp_scan[key][key1][key2])
                     list_arp_scan[key][key1][key2] = local_discover[key][key1][key2];
             }
@@ -144,14 +152,20 @@ function format_data_to_use(curent_list)
     {
         var remote = {
             name: key,
-            children: []
-        }
+            children: [],
+            connected: true
+        };
+        if (config_serv.remote_con[key])
+            remote.connected = false;
         for (var key1 in list_arp_save[key])
         {
             var iface = {
                 name: key1,
-                children: []
-            }
+                children: [],
+                connected: true
+            };
+            if (config_serv.iface_con[key1])
+                iface.connected = false;
             for (var key2 in list_arp_save[key][key1])
             {
                 iface.children.push(list_arp_save[key][key1][key2]);
@@ -161,26 +175,6 @@ function format_data_to_use(curent_list)
         list_arp_scan.children.push(remote);
     }
     return (list_arp_scan);
-}
-
-function update_discovered(local_discover)
-{
-    var list_arp_scan = make_list_arp_scan();
-    //MASTER
-    config_serv.local_discover
-    for (var key in list_arp_scan.children)
-    {
-        //REMOTE
-        for (var key1 in list_arp_scan.children[key].children)
-        {
-            //INTERACE
-            for (var key2 in list_arp_scan.children[key].children[key1].children)
-            {
-                //HOST
-                list_arp_scan.children[key].children[key1].children[key2].connected = true;
-            }
-        } 
-    }
 }
 
 function make_list_arp_scan()
