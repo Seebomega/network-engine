@@ -99,7 +99,7 @@ function format_data_to_save(list_arp_scan, connected)
             {
                 //HOST
                 list_arp_scan.children[key].children[key1].children[key2].connected = connected;
-                save_format[list_arp_scan.children[key].name][list_arp_scan.children[key].children[key1].name][list_arp_scan.children[key].children[key1].children[key2].mac] = list_arp_scan.children[key].children[key1].children[key2];
+                save_format[list_arp_scan.children[key].name][list_arp_scan.children[key].children[key1].name][list_arp_scan.children[key].children[key1].children[key2].ip] = list_arp_scan.children[key].children[key1].children[key2];
             }
         } 
     }
@@ -199,13 +199,13 @@ function get_arp_scan_formated(list_arp_scan)
 }
 
 setInterval(function(){
-    var list_arp_scan = make_list_arp_scan();
-    var merge_list_arp_scan = get_arp_scan_formated(list_arp_scan);
+    var merge_list_arp_scan = get_arp_scan_formated(make_list_arp_scan());
+    merge_list_arp_scan.connected = true;
     for (var key in config_serv.client)
     {
         config_serv.client[key].emit('arp-discover', merge_list_arp_scan);
     }
-    console.log("Broadcast emit ", list_arp_scan);
+    console.log("Broadcast emit ", merge_list_arp_scan);
     format_data_to_save(merge_list_arp_scan, false);
 }, 10000);
 
