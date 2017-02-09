@@ -81,11 +81,13 @@ io.on('connection', function (socket) {
 });
 
 setInterval(function(){
-    var list_arp_scan = [];
+    var list_arp_scan = {};
+    list_arp_scan.name = "MASTER";
+    list_arp_scan.children = [];
     for (var key in config_serv.arp_client)
     {
         if (config_serv.arp_client[key].arp_scan)
-            list_arp_scan.push(config_serv.arp_client[key].arp_scan);
+            list_arp_scan.children.push(config_serv.arp_client[key].arp_scan);
     }
     for (var key in config_serv.client)
     {
