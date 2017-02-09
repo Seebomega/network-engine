@@ -21,7 +21,7 @@ var config_serv = {
 	ip_serveur: '0.0.0.0',
 	debug: true,
 	client: [],
-	port_http: 80,
+	port_http: 8080,
 	web_domain_site: 'https://network.onlineterroir.com',
 };
 

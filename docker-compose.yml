@@ -2,8 +2,9 @@ version: "2"
 
 services:
   network-engine:
-    image: gitlab.onlineterroir.com:5001/pitzzae/network-engine
-#    image: network-remote
+#   image: gitlab.onlineterroir.com:5001/pitzzae/network-engine
+    image: network-engine
     container_name: network-engine
     restart: always
-    network_mode: "bridge"
+    ports: 
+      - "80:8080"
