@@ -12,6 +12,8 @@ $(function() {
     var url = url_split[2];
     var socket = io.connect("http://localhost", {secure: true});
 
+    socket.emit('login', {type: "client"});
+
     socket.on('arp-discover', function(data){
         console.log(data);
     });

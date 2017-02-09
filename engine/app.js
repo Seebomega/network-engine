@@ -20,7 +20,8 @@ var config_serv = {
 	app: express(),
 	ip_serveur: '0.0.0.0',
 	debug: true,
-	client: [],
+	client: {},
+    arp_client: {},
 	port_http: 8080,
 	web_domain_site: 'https://network.onlineterroir.com',
 };
@@ -44,11 +45,52 @@ io.on('connection', function (socket) {
     socket.on('connect', function () {
         console.log("connect");
     });
+    socket.on('login', function (data) {
+        console.log("Login action");
+        if (data.type == "arp_client")
+        {
+            console.log("login arp_client");
+            socket.client_name = data.hostname;
+            config_serv.arp_client[socket.id] = socket;
+        }
+        else if (data.type == "client")
+        {
+            console.log("login client");
+            config_serv.client[socket.id] = socket;
+        }
+    });
     socket.on('scan_arp', function (data) {
         console.log(data);
-        socket.broadcast.emit('arp-discover', data);
+        if (!config_serv.arp_client[socket.id])
+            config_serv.arp_client[socket.id] = {};
+        config_serv.arp_client[socket.id].arp_scan = data;
     });
     socket.on('disconnect', function () {
         console.log("disconnect");
+        for(var key in  config_serv.client)
+        {
+            if (key == socket.id)
+                delete config_serv.client[key];
+        }
+        for(var key in  config_serv.arp_client)
+        {
+            if (key == socket.id)
+                delete config_serv.arp_client[key];
+        }
     });
 });
+
+setInterval(function(){
+    var list_arp_scan = [];
+    for (var key in config_serv.arp_client)
+    {
+        if (config_serv.arp_client[key].arp_scan)
+            list_arp_scan.push(config_serv.arp_client[key].arp_scan);
+    }
+    for (var key in config_serv.client)
+    {
+        config_serv.client[key].emit('arp-discover', list_arp_scan);
+    }
+    console.log("Broadcast emit ", list_arp_scan);
+}, 10000);
+
