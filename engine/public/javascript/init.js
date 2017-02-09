@@ -8,6 +8,14 @@ $(function() {
     var diameter =  coef * $('body').height();
     var duration = 350;
 
+    var url_split = window.document.URL.split('/');
+    var url = url_split[2];
+    var socket = io.connect("http://localhost", {secure: true});
+
+    socket.on('arp-discover', function(data){
+        console.log(data);
+    });
+
     var pubs = {
             "name": "AUT-1",
             "children": [

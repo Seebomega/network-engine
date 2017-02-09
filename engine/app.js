@@ -37,12 +37,8 @@ server_http.listen(config_serv.port_http, config_serv.ip_serveur, function () {
     console.log('Server_http listening at port %d', config_serv.port_http);
 });
 
-
-
-
-
 var io = require('socket.io').listen(process.env.VIRTUAL_NODE_PORT || server_http);
-console.log('socket.io listening at port %d', process.env.VIRTUAL_NODE_PORT || server_http);
+console.log('socket.io listening at port %d', process.env.VIRTUAL_NODE_PORT || config_serv.port_http);
 
 io.on('connection', function (socket) {
     socket.on('connect', function () {
@@ -50,8 +46,9 @@ io.on('connection', function (socket) {
     });
     socket.on('scan_arp', function (data) {
         console.log(data);
+        socket.broadcast.emit('arp-discover', data);
     });
     socket.on('disconnect', function () {
-        console.log("connect");
+        console.log("disconnect");
     });
 });
