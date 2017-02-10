@@ -109,7 +109,7 @@ function register_arp_client(data, socket)
         var arp_token = {};
         arp_token.id = makeid();
         arp_token.valid = true;
-        config_serv.local_options.remote_token[arp_token] = true;
+        config_serv.local_options.remote_token[arp_token.id] = true;
         fs.writeFileSync('data/options.json', JSON.stringify(config_serv.local_options));
         socket.emit("return_register", arp_token);
         console.log("Client register");
