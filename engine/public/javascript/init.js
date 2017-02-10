@@ -18,7 +18,7 @@ $(function() {
 
     socket.emit('login', {type: "client"});
 
-    var pubs = {};
+    var pubs = {name: "MASTER"};
 
     socket.on('arp-discover', function(data){
         console.log(data);
@@ -32,6 +32,31 @@ $(function() {
         _link,
         _node;
 
+
+    function createNotif(d){
+        var notifClass = "success";
+        var message = "";
+        if(d.mac && d.mac.length>1){
+            notifClass = "warning";
+            message = "IP conflict on " + d.mac.join("-");
+        }
+        else{
+            if(d.connected){
+                message = d.name + "Has connected"
+            }
+            else{
+                notifClass = "alert";
+                message = d.name + "Has disconnected"
+            }
+        }
+
+        var html = '<div data-alert class="alert-box '+notifClass+' round">'+
+                    message+
+                    '<a href="#" class="close">&times;</a>'+
+                '</div>';
+
+        $('body').append();
+    }
 
     function transitionToRadialTree() {
 
@@ -61,10 +86,10 @@ $(function() {
             .duration(duration)
             .attr("transform", function(d) {
                 if(!d.children) {
-                    return (d.x <= 180) ? "translate(0)" : "rotate(180)translate(-20)";
+                    return (d.x < 180) ? "translate(0)" : "rotate(180)translate(-20)";
                 }
                 else{
-                    return (d.x > 180) ? "rotate(180)translate(0)":"translate(0)";
+                    return (d.x >= 180) ? "rotate(180)translate(0)":"translate(0)";
                 }
             })
             .attr("text-anchor", function(d) {
@@ -81,10 +106,23 @@ $(function() {
             .transition()
             .duration(duration)
             .style("stroke", function(d){
-                return d.connected?"#4daf4a":"#e41a1c";
+                createNotif(d);
+                if(d.mac && d.mac.length > 1){
+                    return "#E8A526";
+                }
+                else{
+                    return d.connected?"#4daf4a":"#e41a1c";
+                }
+
             })
             .style('fill', function(d){
-                return d._children?"#000":"#fff";
+                if(d._children){
+                    return "#000";
+                }
+                else{
+                    return d.docker?"#408FBD":"#fff";
+                }
+
             });
 
     }
@@ -117,10 +155,10 @@ $(function() {
             .duration(duration)
             .attr("transform", function(d) {
                 if(!d.children) {
-                    return (d.x <= 180) ? "translate(0)" : "rotate(180)translate(-20)";
+                    return (d.x < 180) ? "translate(0)" : "rotate(180)translate(-20)";
                 }
                 else{
-                    return (d.x > 180) ? "rotate(180)translate(0)":"translate(0)";
+                    return (d.x >= 180) ? "rotate(180)translate(0)":"translate(0)";
                 }
             })
             .attr("text-anchor", function(d) {
@@ -137,10 +175,23 @@ $(function() {
             .transition()
             .duration(duration)
             .style("stroke", function(d){
-                return d.connected?"#4daf4a":"#e41a1c";
+                createNotif(d);
+                if(d.mac && d.mac.length > 1){
+                    return "#E8A526";
+                }
+                else{
+                    return d.connected?"#4daf4a":"#e41a1c";
+                }
+
             })
             .style('fill', function(d){
-                return d._children?"#000":"#fff";
+                if(d._children){
+                    return "#000";
+                }
+                else{
+                    return d.docker?"#408FBD":"#fff";
+                }
+
             });
 
     }
@@ -178,10 +229,23 @@ $(function() {
             .transition()
             .duration(duration)
             .style("stroke", function(d){
-                return d.connected?"#4daf4a":"#e41a1c";
+                createNotif(d);
+                if(d.mac && d.mac.length > 1){
+                    return "#E8A526";
+                }
+                else{
+                    return d.connected?"#4daf4a":"#e41a1c";
+                }
+
             })
             .style('fill', function(d){
-                return d._children?"#000":"#fff";
+                if(d._children){
+                    return "#000";
+                }
+                else{
+                    return d.docker?"#408FBD":"#fff";
+                }
+
             });
 
     }
@@ -218,10 +282,23 @@ $(function() {
             .transition()
             .duration(duration)
             .style("stroke", function(d){
-                return d.connected?"#4daf4a":"#e41a1c";
+                createNotif(d);
+                if(d.mac && d.mac.length > 1){
+                    return "#E8A526";
+                }
+                else{
+                    return d.connected?"#4daf4a":"#e41a1c";
+                }
+
             })
             .style('fill', function(d){
-                return d._children?"#000":"#fff";
+                if(d._children){
+                    return "#000";
+                }
+                else{
+                    return d.docker?"#408FBD":"#fff";
+                }
+
             });
 
     }
@@ -283,14 +360,13 @@ $(function() {
         // Update the nodes…
         var node = svg.selectAll("g.node")
             .data(nodes, function(d) {
-                return d.id || (d.id = md5(d.name + parseInt(d.x) + parseInt(d.y)));
+                return d.id || (d.id = md5(d.name + d.ip + (d.name!="MASTER"? d.parent.name:"")));
             });
 
         var nodeExit = node.exit().remove();
         // Enter any new nodes at the parent's previous position.
         var nodeEnter = node.enter().append("g")
             .attr("class", "node")
-            //.attr("transform", function(d) { return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; })
             .on("click", click);
 
         if(updateText){
