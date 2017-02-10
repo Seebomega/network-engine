@@ -21,41 +21,55 @@ $(function() {
     var pubs = {name: "MASTER"};
 
     socket.on('arp-discover', function(data){
+        $('.alert-box').animate({
+            opacity: 0,
+            right: "-=500"
+        }, 800, function() {
+           this.remove();
+        });
+        notifs = 0;
         console.log(data);
         root = data;
         root.x0 = height / 2;
         root.y0 = width/2;
         update(root, false);
+
     });
 
-    var root,
+    var notifs = 0,
+        tour=0,
+        root,
         _link,
         _node;
 
 
     function createNotif(d){
-        var notifClass = "success";
-        var message = "";
-        if(d.mac && d.mac.length>1){
-            notifClass = "warning";
-            message = "IP conflict on " + d.mac.join("-");
-        }
-        else{
-            if(d.connected){
-                message = d.name + "Has connected"
+        if(tour != 0){
+            var notifClass = "success";
+            var message = "";
+            if(d.mac && d.mac.length>1){
+                notifs ++;
+                notifClass = "warning";
+                message = "IP conflict on " + d.mac.join("-");
             }
             else{
-                notifClass = "alert";
-                message = d.name + "Has disconnected"
+                if(d.connected){
+                    return false;
+                }
+                else{
+                    notifs ++;
+                    notifClass = "alert";
+                    message = d.name + " Has disconnected"
+                }
             }
-        }
 
-        var html = '<div data-alert class="alert-box '+notifClass+' round">'+
-                    message+
-                    '<a href="#" class="close">&times;</a>'+
+            var html = '<div data-alert class="alert-box '+notifClass+' round" style="position:absolute;display:block;top:'+60*notifs+'px;right:0;">'+
+                message+
+                '<a href="#" class="close">&times;</a>'+
                 '</div>';
 
-        $('body').append();
+            $(html).hide().appendTo('body').fadeIn(2000);
+        }
     }
 
     function transitionToRadialTree() {
@@ -342,14 +356,14 @@ $(function() {
     root.x0 = height / 2;
     root.y0 = width/2;
 
-//root.children.forEach(collapse); // start with all children collapsed
-    update(root, false);
     d3.selectAll("input").on("change", function(){
         update(root , true);
     });
 
     function update(source, updateText) {
-
+        if(tour == 0){
+            tour++;
+        }
         // Compute the new tree layout.
         var nodes = tree.nodes(root),
             links = tree.links(nodes);
