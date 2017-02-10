@@ -61,7 +61,7 @@ $(function() {
             .duration(duration)
             .attr("transform", function(d) {
                 if(!d.children) {
-                    return (d.x < 180) ? "translate(0)" : "rotate(180)translate(-20)";
+                    return (d.x <= 180) ? "translate(0)" : "rotate(180)translate(-20)";
                 }
                 else{
                     return (d.x > 180) ? "rotate(180)translate(0)":"translate(0)";
@@ -69,7 +69,7 @@ $(function() {
             })
             .attr("text-anchor", function(d) {
                 if(!d.children){
-                    return (d.x > 180) ? "end" : "start";
+                    return (d.x >= 180) ? "end" : "start";
                 }
                 else{
                     return "start";
@@ -117,7 +117,7 @@ $(function() {
             .duration(duration)
             .attr("transform", function(d) {
                 if(!d.children) {
-                    return (d.x < 180) ? "translate(0)" : "rotate(180)translate(-20)";
+                    return (d.x <= 180) ? "translate(0)" : "rotate(180)translate(-20)";
                 }
                 else{
                     return (d.x > 180) ? "rotate(180)translate(0)":"translate(0)";
@@ -125,7 +125,7 @@ $(function() {
             })
             .attr("text-anchor", function(d) {
                 if(!d.children){
-                    return (d.x > 180) ? "end" : "start";
+                    return (d.x >= 180) ? "end" : "start";
                 }
                 else{
                     return "start";
