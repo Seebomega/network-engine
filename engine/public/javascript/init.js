@@ -47,10 +47,12 @@ $(function() {
         if(tour != 0){
             var notifClass = "success";
             var message = "";
+            var currentNotif = notifs;
+
             if(d.mac && d.mac.length>1){
                 notifs ++;
                 notifClass = "warning";
-                message = "IP conflict on " + d.mac.join("-");
+                message = "IP conflict on " + d.mac.join(" / ");
             }
             else{
                 if(d.connected){
@@ -59,11 +61,11 @@ $(function() {
                 else{
                     notifs ++;
                     notifClass = "alert";
-                    message = d.name + " Has disconnected"
+                    message = d.name + " Is disconnected"
                 }
             }
 
-            var html = '<div data-alert class="alert-box '+notifClass+' round" style="position:absolute;display:block;top:'+60*notifs+'px;right:0;">'+
+            var html = '<div data-alert class="alert-box '+notifClass+' round" style="min-width:280px;position:absolute;display:block;top:'+55*currentNotif+'px;right:0;z-index:-1">'+
                 message+
                 '<a href="#" class="close">&times;</a>'+
                 '</div>';
