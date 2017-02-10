@@ -25,7 +25,8 @@ var config_serv = {
     arp_client: {},
 	port_http: 8080,
 	web_domain_site: 'https://network.onlineterroir.com',
-    local_discover: JSON.parse(fs.readFileSync('data/all_discovered.json') || '{}')
+    local_discover: JSON.parse(fs.readFileSync('data/all_discovered.json') || '{}'),
+    local_options: JSON.parse(fs.readFileSync('data/options.json') || '{}')
 };
 
 config_serv.app.use(bodyParser.json());
@@ -53,6 +54,7 @@ io.on('connection', function (socket) {
         {
             console.log("login arp_client");
             socket.client_name = data.hostname;
+            socket.token_register = data.token;
             config_serv.arp_client[socket.id] = socket;
         }
         else if (data.type == "client")
@@ -66,7 +68,13 @@ io.on('connection', function (socket) {
         console.log(data);
         if (!config_serv.arp_client[socket.id])
             config_serv.arp_client[socket.id] = {};
-        config_serv.arp_client[socket.id].arp_scan = data;
+        if (config_serv.local_options.remote_token[socket.token_register])
+            config_serv.arp_client[socket.id].arp_scan = data;
+        else
+            console.log("Unregister remote " + socket.id + " " + socket.conn.remoteAddress);
+    });
+    socket.on('register_scan_arp', function (data) {
+        register_arp_client(data, socket);
     });
     socket.on('disconnect', function () {
         console.log("disconnect");
@@ -82,6 +90,38 @@ io.on('connection', function (socket) {
         }
     });
 });
+
+function makeid()
+{
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+    for( var i=0; i < 12; i++ )
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+    return text;
+}
+
+function register_arp_client(data, socket)
+{
+    if (data == config_serv.local_options.master_token)
+    {
+        var arp_token = {};
+        arp_token.id = makeid();
+        arp_token.valid = true;
+        config_serv.local_options.remote_token[arp_token] = true;
+        fs.writeFileSync('data/options.json', JSON.stringify(config_serv.local_options));
+        socket.emit("return_register", arp_token);
+        console.log("Client register");
+    }
+    else
+    {
+        var arp_token = {};
+        arp_token.valid = false;
+        console.log("Error: Client register, wrong master token");
+        socket.emit("return_register", arp_token);
+    }
+}
 
 function format_data_to_save(list_arp_scan, connected)
 {

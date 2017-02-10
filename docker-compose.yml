@@ -2,8 +2,8 @@ version: "2"
 
 services:
   network-engine:
-#    image: gitlab.onlineterroir.com:5001/pitzzae/network-engine
-    image: network-engine
+    image: gitlab.onlineterroir.com:5001/pitzzae/network-engine
+#    image: network-engine
     container_name: network-engine
     restart: always
     privileged: true
@@ -11,5 +11,5 @@ services:
       - "80:8080"
     network_mode: "bridge"
     volumes:
-      - "./engine/data/all_discovered.json:/data/engine/data/all_discovered.json"
+      - "./engine/data:/data/engine/data"
       - "./engine/public:/data/engine/public"
