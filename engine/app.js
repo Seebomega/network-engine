@@ -23,7 +23,7 @@ var config_serv = {
 	debug: true,
 	client: {},
     arp_client: {},
-	port_http: 8080,
+	port_http: process.env.VIRTUAL_PORT || 8080,
 	web_domain_site: 'https://network.onlineterroir.com',
     local_discover: JSON.parse(fs.readFileSync('data/all_discovered.json') || '{}'),
     local_options: JSON.parse(fs.readFileSync('data/options.json') || '{}')
