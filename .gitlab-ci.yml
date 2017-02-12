@@ -4,6 +4,7 @@ services:
 
 stages:
 - release
+- deploy
 
 variables:
   CONTAINER_TEST_IMAGE: gitlab.onlineterroir.com:5001/pitzzae/network-engine:$CI_BUILD_REF_NAME
@@ -14,9 +15,24 @@ before_script:
 
 release-image:
   stage: release
+  tags:
+    - Atomos
   script:
     - docker build -t $CONTAINER_TEST_IMAGE .
     - docker tag $CONTAINER_TEST_IMAGE $CONTAINER_RELEASE_IMAGE
     - docker push $CONTAINER_RELEASE_IMAGE
+  only:
+    - master
+
+deploy-image:
+  stage: deploy
+  tags:
+    - Shell
+  script:
+    - cd /nfs/docker/nginx-proxy/
+    - docker-compose pull network-engine
+    - docker-compose stop network-engine
+    - sleep 5
+    - docker-compose up -d network-engine
   only:
     - master
