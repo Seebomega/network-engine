@@ -10,11 +10,9 @@ RUN mkdir -p /data/engine && \
 
 ADD ./engine /data/engine
 
-EXPOSE 80
+EXPOSE 80/tcp 3002/tcp
 
 RUN chown -R engine:engine /data/engine
-
-USER engine
 
 WORKDIR /data/engine
 
