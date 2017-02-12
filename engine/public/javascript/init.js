@@ -50,6 +50,7 @@ $(function () {
             var currentNotif = notifs;
 
             if (d.mac && d.mac.length > 1) {
+                console.log(d.mac);
                 notifs++;
                 notifClass = "warning";
                 message = "IP conflict on " + d.mac.join(" / ");
@@ -386,7 +387,8 @@ $(function () {
         var nodeEnter = node.enter().append("g")
             .attr("class", "node")
             .on("click", click)
-            .on("mouseover", function (d) {
+            .on("mouseenter", function (d) {
+                $('.pricing-table').remove();
                 var pos = getPos(parseInt(d3.event.pageX), parseInt(d3.event.pageY));
 
                 var html = '<ul class="pricing-table" style="z-index:999;overflow-y:auto;max-height:250px;position:absolute;top:' + pos.y + 'px;left:' + pos.x + 'px;">';
@@ -412,9 +414,9 @@ $(function () {
                 html += '</ul>';
                 $('body').append(html);
                 d3.event.stopPropagation();
-            })
-            .on("mouseout", function (d) {
-                $('ul.pricing-table').remove();
+                $('.pricing-table').on("mouseleave",function(){
+                    this.remove();
+                });
             });
 
         if (updateText) {
@@ -477,11 +479,11 @@ $(function () {
 
     function getPos(x, y) {
         if((y+200) > height){
-            y-= 200;
+            y-= Math.abs(height - (y+200));
         }
 
-        if((x+150) > width){
-            x -= 150;
+        if((x+180) > width){
+            x -= Math.abs(width - (x+180));
         }
 
         return {
