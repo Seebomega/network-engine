@@ -1,11 +1,11 @@
 /**
  * Created by omega on 2/8/17.
  */
-$(function() {
+$(function () {
     var coef = 0.95,
         width = $(window).width(),
-        height =  coef * $(window).height();
-    var diameter =  coef * $(window).height();
+        height = coef * $(window).height();
+    var diameter = coef * $(window).height();
     var duration = 1500;
 
     var url_split = window.document.URL.split('/');
@@ -20,54 +20,54 @@ $(function() {
 
     var pubs = {name: "MASTER"};
 
-    socket.on('arp-discover', function(data){
+    socket.on('arp-discover', function (data) {
         $('.alert-box').animate({
             opacity: 0,
             right: "-=500"
-        }, 800, function() {
-           this.remove();
+        }, 800, function () {
+            this.remove();
         });
         notifs = 0;
         console.log(data);
         root = data;
         root.x0 = height / 2;
-        root.y0 = width/2;
+        root.y0 = width / 2;
         update(root, false);
 
     });
 
     var notifs = 0,
-        tour=0,
+        tour = 0,
         root,
         _link,
         _node;
 
 
-    function createNotif(d){
-        if(tour != 0){
+    function createNotif(d) {
+        if (tour != 0) {
             var notifClass = "success";
             var message = "";
             var currentNotif = notifs;
 
-            if(d.mac && d.mac.length>1){
-                notifs ++;
+            if (d.mac && d.mac.length > 1) {
+                notifs++;
                 notifClass = "warning";
                 message = "IP conflict on " + d.mac.join(" / ");
             }
-            else{
-                if(d.connected){
+            else {
+                if (d.connected) {
                     return false;
                 }
-                else{
-                    notifs ++;
+                else {
+                    notifs++;
                     notifClass = "alert";
                     message = d.name + " Is disconnected"
                 }
             }
 
-            var html = '<div data-alert class="alert-box '+notifClass+' round" style="min-width:280px;position:absolute;display:block;top:'+55*currentNotif+'px;right:0;z-index:-1">'+
-                message+
-                '<a href="#" class="close">&times;</a>'+
+            var html = '<div data-alert class="alert-box ' + notifClass + ' round" style="min-width:280px;position:absolute;display:block;top:' + 55 * currentNotif + 'px;right:0;z-index:-1">' +
+                message +
+                '<a href="#" class="close">&times;</a>' +
                 '</div>';
 
             $(html).hide().appendTo('body').fadeIn(2000);
@@ -80,8 +80,8 @@ $(function() {
             links = tree.links(nodes);
 
         svg.transition().duration(duration)
-            .attr("transform", "translate(" + (width/2) + "," +
-                (height/2) + ")");
+            .attr("transform", "translate(" + (width / 2) + "," +
+                (height / 2) + ")");
         // set appropriate translation (origin in middle of svg)
 
         _link.data(links)
@@ -93,26 +93,26 @@ $(function() {
         _node.data(nodes)
             .transition()
             .duration(duration)
-            .attr("transform", function(d) {
+            .attr("transform", function (d) {
                 return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")";
             });
 
         _node.select("text")
             .transition()
             .duration(duration)
-            .attr("transform", function(d) {
-                if(!d.children) {
+            .attr("transform", function (d) {
+                if (!d.children) {
                     return (d.x < 180) ? "translate(0)" : "rotate(180)translate(-20)";
                 }
-                else{
-                    return (d.x >= 180) ? "rotate(180)translate(0)":"translate(0)";
+                else {
+                    return (d.x >= 180) ? "rotate(180)translate(0)" : "translate(0)";
                 }
             })
-            .attr("text-anchor", function(d) {
-                if(!d.children){
+            .attr("text-anchor", function (d) {
+                if (!d.children) {
                     return (d.x >= 180) ? "end" : "start";
                 }
-                else{
+                else {
                     return "start";
                 }
 
@@ -121,22 +121,22 @@ $(function() {
         _node.select("circle")
             .transition()
             .duration(duration)
-            .style("stroke", function(d){
+            .style("stroke", function (d) {
                 createNotif(d);
-                if(d.mac && d.mac.length > 1){
+                if (d.mac && d.mac.length > 1) {
                     return "#E8A526";
                 }
-                else{
-                    return d.connected?"#4daf4a":"#e41a1c";
+                else {
+                    return d.connected ? "#4daf4a" : "#e41a1c";
                 }
 
             })
-            .style('fill', function(d){
-                if(d._children){
+            .style('fill', function (d) {
+                if (d._children) {
                     return "#000";
                 }
-                else{
-                    return d.docker?"#408FBD":"#fff";
+                else {
+                    return d.docker ? "#408FBD" : "#fff";
                 }
 
             });
@@ -149,8 +149,8 @@ $(function() {
             links = radialCluster.links(nodes);
 
         svg.transition().duration(duration)
-            .attr("transform", "translate(" + (width/2) + "," +
-                (height/2) + ")");
+            .attr("transform", "translate(" + (width / 2) + "," +
+                (height / 2) + ")");
         // set appropriate translation (origin in middle of svg)
 
         _link.data(links)
@@ -162,26 +162,26 @@ $(function() {
         _node.data(nodes)
             .transition()
             .duration(duration)
-            .attr("transform", function(d) {
+            .attr("transform", function (d) {
                 return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")";
             });
 
         _node.select("text")
             .transition()
             .duration(duration)
-            .attr("transform", function(d) {
-                if(!d.children) {
+            .attr("transform", function (d) {
+                if (!d.children) {
                     return (d.x < 180) ? "translate(0)" : "rotate(180)translate(-20)";
                 }
-                else{
-                    return (d.x >= 180) ? "rotate(180)translate(0)":"translate(0)";
+                else {
+                    return (d.x >= 180) ? "rotate(180)translate(0)" : "translate(0)";
                 }
             })
-            .attr("text-anchor", function(d) {
-                if(!d.children){
+            .attr("text-anchor", function (d) {
+                if (!d.children) {
                     return (d.x >= 180) ? "end" : "start";
                 }
-                else{
+                else {
                     return "start";
                 }
 
@@ -190,22 +190,22 @@ $(function() {
         _node.select("circle")
             .transition()
             .duration(duration)
-            .style("stroke", function(d){
+            .style("stroke", function (d) {
                 createNotif(d);
-                if(d.mac && d.mac.length > 1){
+                if (d.mac && d.mac.length > 1) {
                     return "#E8A526";
                 }
-                else{
-                    return d.connected?"#4daf4a":"#e41a1c";
+                else {
+                    return d.connected ? "#4daf4a" : "#e41a1c";
                 }
 
             })
-            .style('fill', function(d){
-                if(d._children){
+            .style('fill', function (d) {
+                if (d._children) {
                     return "#000";
                 }
-                else{
-                    return d.docker?"#408FBD":"#fff";
+                else {
+                    return d.docker ? "#408FBD" : "#fff";
                 }
 
             });
@@ -237,29 +237,29 @@ $(function() {
             .transition()
             .duration(duration)
             .attr("transform", function (d) {
-                return d.children? "rotate(-90)":"rotate(-60)";
+                return d.children ? "rotate(-90)" : "rotate(-60)";
 
             });
 
         _node.select("circle")
             .transition()
             .duration(duration)
-            .style("stroke", function(d){
+            .style("stroke", function (d) {
                 createNotif(d);
-                if(d.mac && d.mac.length > 1){
+                if (d.mac && d.mac.length > 1) {
                     return "#E8A526";
                 }
-                else{
-                    return d.connected?"#4daf4a":"#e41a1c";
+                else {
+                    return d.connected ? "#4daf4a" : "#e41a1c";
                 }
 
             })
-            .style('fill', function(d){
-                if(d._children){
+            .style('fill', function (d) {
+                if (d._children) {
                     return "#000";
                 }
-                else{
-                    return d.docker?"#408FBD":"#fff";
+                else {
+                    return d.docker ? "#408FBD" : "#fff";
                 }
 
             });
@@ -284,35 +284,35 @@ $(function() {
             .transition()
             .duration(duration)
             .attr("transform", function (d) {
-                return "translate(" + d.x + "," + d.y+ ")";
+                return "translate(" + d.x + "," + d.y + ")";
             });
 
         _node.select("text")
             .transition()
             .duration(duration)
             .attr("transform", function (d) {
-                return d.children? "rotate(-90)":"rotate(-60)";
+                return d.children ? "rotate(-90)" : "rotate(-60)";
             });
 
         _node.select("circle")
             .transition()
             .duration(duration)
-            .style("stroke", function(d){
+            .style("stroke", function (d) {
                 createNotif(d);
-                if(d.mac && d.mac.length > 1){
+                if (d.mac && d.mac.length > 1) {
                     return "#E8A526";
                 }
-                else{
-                    return d.connected?"#4daf4a":"#e41a1c";
+                else {
+                    return d.connected ? "#4daf4a" : "#e41a1c";
                 }
 
             })
-            .style('fill', function(d){
-                if(d._children){
+            .style('fill', function (d) {
+                if (d._children) {
                     return "#000";
                 }
-                else{
-                    return d.docker?"#408FBD":"#fff";
+                else {
+                    return d.docker ? "#408FBD" : "#fff";
                 }
 
             });
@@ -322,7 +322,7 @@ $(function() {
 
     var tree = d3.layout.tree()
         .size([360, (diameter / 2) - 80])
-        .separation(function(a, b) {
+        .separation(function (a, b) {
             return 50;
         });
 
@@ -332,38 +332,38 @@ $(function() {
         });
 
     var cluster = d3.layout.cluster()
-        .size([width-70, height-10]);
+        .size([width - 70, height - 10]);
 
     var radialTree = d3.layout.tree()
-        .size([width-70, height-10]);
+        .size([width - 70, height - 10]);
 
     var radialCluster = d3.layout.cluster()
-        .size([360, (diameter / 2) - 80 ])
-        .separation(function(a, b) {
+        .size([360, (diameter / 2) - 80])
+        .separation(function (a, b) {
             return 50;
         });
 
     var radialDiagonal = d3.svg.diagonal.radial()
-        .projection(function(d) {
+        .projection(function (d) {
             return [d.y, d.x / 180 * Math.PI];
         });
 
     var svg = d3.select("body").append("svg")
-        .attr("width", width )
-        .attr("height", height )
+        .attr("width", width)
+        .attr("height", height)
         .append("g")
         .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
     root = pubs;
     root.x0 = height / 2;
-    root.y0 = width/2;
+    root.y0 = width / 2;
 
-    d3.selectAll("input").on("change", function(){
-        update(root , true);
+    d3.selectAll("input").on("change", function () {
+        update(root, true);
     });
 
     function update(source, updateText) {
-        if(tour == 0){
+        if (tour == 0) {
             tour++;
         }
         // Compute the new tree layout.
@@ -371,21 +371,53 @@ $(function() {
             links = tree.links(nodes);
 
         // Normalize for fixed-depth.
-        nodes.forEach(function(d) { d.y = d.depth * 50; });
+        nodes.forEach(function (d) {
+            d.y = d.depth * 50;
+        });
 
         // Update the nodes…
         var node = svg.selectAll("g.node")
-            .data(nodes, function(d) {
-                return d.id || (d.id = md5(d.name + d.ip + (d.name!="MASTER"? d.parent.name:"")));
+            .data(nodes, function (d) {
+                return d.id || (d.id = md5(d.name + d.ip + (d.name != "MASTER" ? d.parent.name : "")));
             });
 
         var nodeExit = node.exit().remove();
         // Enter any new nodes at the parent's previous position.
         var nodeEnter = node.enter().append("g")
             .attr("class", "node")
-            .on("click", click);
+            .on("click", click)
+            .on("mouseover", function (d) {
+                var pos = getPos(parseInt(d3.event.pageX), parseInt(d3.event.pageY));
 
-        if(updateText){
+                var html = '<ul class="pricing-table" style="z-index:999;overflow-y:auto;max-height:250px;position:absolute;top:' + pos.y + 'px;left:' + pos.x + 'px;">';
+                $.each(d, function (key, value) {
+                    var unwantedKeys = ["name", "parent", "children", "_children", "x", "y", "id", "depth", "x0", "y0"];
+                    if ($.inArray(key, unwantedKeys) == -1) {
+                        if (key == "docker") {
+                            html += '<li class="bullet-item" style="text-align:left;padding: 6px;"><b>' + key + ' :</b> <i class="fa fa-docker fa-2x" style="color:' + (value ? "#4daf4a" : "#e41a1c") + ';vertical-align: middle;"></i></li>';
+                        }
+                        else if (key == "connected") {
+
+                            var ico = value ? "check-square" : "window-close";
+                            var color = value ? "#4daf4a" : "#e41a1c";
+
+                            html += '<li class="bullet-item" style="text-align:left;padding: 6px;"><b>' + key + ' :</b> <i class="fa fa-' + ico + '" style="color:' + color + ';vertical-align: middle;"></i></li>';
+                        }
+                        else {
+                            html += '<li class="bullet-item" style="text-align:left;padding: 6px;"><b>' + key + ' :</b> ' + value + '</li>';
+                        }
+
+                    }
+                });
+                html += '</ul>';
+                $('body').append(html);
+                d3.event.stopPropagation();
+            })
+            .on("mouseout", function (d) {
+                $('ul.pricing-table').remove();
+            });
+
+        if (updateText) {
             node.selectAll("text")
                 .attr("transform", "rotate(0)translate(0)")
                 .attr("text-anchor", "start");
@@ -394,31 +426,37 @@ $(function() {
 
         nodeEnter.append("circle")
             .attr("r", 6)
-            .style("fill", function(d) { return d._children ? "blue" : "#fff"; })
+            .style("fill", function (d) {
+                return d._children ? "blue" : "#fff";
+            })
             .style("stroke-width", 3);
 
         nodeEnter.append("text")
             .attr("x", 10)
             .attr("dy", ".35em")
             .attr("text-anchor", "start")
-            .text(function(d) { return d.name; })
+            .text(function (d) {
+                return d.name;
+            })
             .style("fill-opacity", 1);
 
 
         // Update the links…
         var link = svg.selectAll("path.link")
-            .data(links, function(d) { return d.target.id; });
+            .data(links, function (d) {
+                return d.target.id;
+            });
 
         var linkExit = link.exit().remove();
         // Enter any new links at the parent's previous position.
         link.enter().insert("path", "g")
             .attr("class", "link")
-            .attr("d", function(d) {
+            .attr("d", function (d) {
                 var o = {x: source.x, y: source.y};
                 return diagonalcluster({source: o, target: o});
             })
-            .style("stroke-width", function(d){
-                return (1/(d.source.depth+1))*3 + 'px';
+            .style("stroke-width", function (d) {
+                return (1 / (d.source.depth + 1)) * 3 + 'px';
             });
 
 
@@ -435,6 +473,22 @@ $(function() {
             transitionToTree();
         else
             transitionToCluster();
+    }
+
+    function getPos(x, y) {
+        if((y+200) > height){
+            y-= 200;
+        }
+
+        if((x+150) > width){
+            x -= 150;
+        }
+
+        return {
+            x: x,
+            y: y
+        };
+
     }
 
 // Toggle children on click.
