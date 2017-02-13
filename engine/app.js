@@ -41,6 +41,27 @@ server_http.listen(config_serv.port_http, config_serv.ip_serveur, function () {
 	console.log('Server_http listening at port %d', config_serv.port_http);
 });
 
+function shutdown(signal, value) {
+	console.log('server stopped by ' + signal);
+	console.log('save all_discovered');
+	if (fs.existsSync('data/all_discovered.json'))
+		format_data_to_save(get_arp_scan_formated(make_list_arp_scan()), false);
+	if (fs.existsSync('data/options.json'))
+		fs.writeFileSync('data/options.json', JSON.stringify(config_serv.local_options));
+	process.exit(128 + value);
+}
+
+var signals = {
+	'SIGINT': 2,
+	'SIGTERM': 15
+};
+
+Object.keys(signals).forEach(function (signal) {
+	process.on(signal, function () {
+		shutdown(signal, signals[signal]);
+	});
+});
+
 var io = require('socket.io').listen(process.env.VIRTUAL_NODE_PORT || server_http);
 console.log('socket.io listening at port %d', process.env.VIRTUAL_NODE_PORT || config_serv.port_http);
 
@@ -249,12 +270,12 @@ function get_arp_scan_formated(list_arp_scan)
 			}
 		}
 	}
+	new_list_arp_scan.connected = true;
 	return new_list_arp_scan;
 }
 
 setInterval(function(){
 	var merge_list_arp_scan = get_arp_scan_formated(make_list_arp_scan());
-	merge_list_arp_scan.connected = true;
 	for (var key in config_serv.client)
 	{
 		config_serv.client[key].emit('arp-discover', merge_list_arp_scan);
@@ -262,4 +283,3 @@ setInterval(function(){
 	console.log("Broadcast emit ", merge_list_arp_scan);
 	format_data_to_save(merge_list_arp_scan, false);
 }, 10000);
-
