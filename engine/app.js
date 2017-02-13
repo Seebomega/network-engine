@@ -238,11 +238,14 @@ function get_arp_scan_formated(list_arp_scan)
 	for (var key in list_arp_scan.children)
 	{
 		new_list_arp_scan.children[key].time = list_arp_scan.children[key].time;
+		for (var key1 in new_list_arp_scan.children[key].children)
+		{
+			new_list_arp_scan.children[key].children[key1].type = list_arp_scan.children[key].children[key1].type;
+			new_list_arp_scan.children[key].children[key1].ip_address = list_arp_scan.children[key].children[key1].ip_address;
+			new_list_arp_scan.children[key].children[key1].gateway_ip = list_arp_scan.children[key].children[key1].gateway_ip;
+			new_list_arp_scan.children[key].children[key1].netmask = list_arp_scan.children[key].children[key1].netmask;
+		}
 	}
-	console.log("-------------------");
-	console.log(list_arp_scan);
-	console.log(new_list_arp_scan);
-	console.log("-------------------");
 	return new_list_arp_scan;
 }
 
