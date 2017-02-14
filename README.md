@@ -1,3 +1,4 @@
+[logo]: http://img15.hostingpics.net/pics/344966example.png "example"
 
 ## Synopsis
 
@@ -5,6 +6,9 @@ Network-Engine aggregates data from remotes and produces an awesome web visualiz
 
 See if hosts are Connected/disconnected, IP conflicts, DNS names, HostNames, IP, mac, DockerRunning ...
 Set aliases to your hosts/nodes.
+
+![example image][logo]
+
 
 ## How it works
 
