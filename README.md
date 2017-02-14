@@ -1,5 +1,4 @@
-
-[logo]: http://www.hostingpics.net/viewer.php?id=46883535ex.png "Example Image"
+[logo]: http://img15.hostingpics.net/pics/46883535ex.png "Example Image"
 
 ## Synopsis
 
