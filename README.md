@@ -46,7 +46,9 @@ Get the Master Token from the `options.json` and register your remotes with `doc
 
 ## Motivation
 
-As passionated friends of internet, we allied our Network-knowledge and Live vizualisations of data, we decided to build a tool to help people to see their networks (Companies, associations, geeks ...). 
+As passionated friends of internet, 
+We allied our Network-knowledge and Live vizualisations of data to build a simple tool.
+We decided to build a tool to help people to see their networks (Companies, associations, geeks ...). 
 It's like a monitoring tool for your network but you can easyly see new devices, IP conflicts etc ...
 And ... for fun, we have to admit it.
 
