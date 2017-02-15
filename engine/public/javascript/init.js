@@ -8,6 +8,8 @@ $(function () {
     var diameter = coef * $(window).height();
     var duration = 1500;
 
+    var collapsed = [];
+
     var url_split = window.document.URL.split('/');
     var url = url_split[2];
     var socket = io.connect(url, {secure: true});
@@ -18,7 +20,7 @@ $(function () {
 
     socket.emit('login', {type: "client"});
 
-    var pubs = {name: "MASTER"};
+    var initData = {name: "MASTER"};
 
     socket.on('arp-discover', function (data) {
         $('.alert-box').animate({
@@ -29,6 +31,7 @@ $(function () {
         });
         notifs = 0;
         console.log(data);
+        collapse(data , data.name);
         root = data;
         root.x0 = height / 2;
         root.y0 = width / 2;
@@ -50,7 +53,6 @@ $(function () {
             var currentNotif = notifs;
 
             if (d.mac && d.mac.length > 1) {
-                console.log(d.mac);
                 notifs++;
                 notifClass = "warning";
                 message = "IP conflict on " + d.mac.join(" / ");
@@ -123,7 +125,6 @@ $(function () {
             .transition()
             .duration(duration)
             .style("stroke", function (d) {
-                createNotif(d);
                 if (d.mac && d.mac.length > 1) {
                     return "#E8A526";
                 }
@@ -192,7 +193,6 @@ $(function () {
             .transition()
             .duration(duration)
             .style("stroke", function (d) {
-                createNotif(d);
                 if (d.mac && d.mac.length > 1) {
                     return "#E8A526";
                 }
@@ -246,7 +246,6 @@ $(function () {
             .transition()
             .duration(duration)
             .style("stroke", function (d) {
-                createNotif(d);
                 if (d.mac && d.mac.length > 1) {
                     return "#E8A526";
                 }
@@ -299,7 +298,6 @@ $(function () {
             .transition()
             .duration(duration)
             .style("stroke", function (d) {
-                createNotif(d);
                 if (d.mac && d.mac.length > 1) {
                     return "#E8A526";
                 }
@@ -355,7 +353,7 @@ $(function () {
         .append("g")
         .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
-    root = pubs;
+    root = initData;
     root.x0 = height / 2;
     root.y0 = width / 2;
 
@@ -379,7 +377,8 @@ $(function () {
         // Update the nodes…
         var node = svg.selectAll("g.node")
             .data(nodes, function (d) {
-                return d.id || (d.id = md5(d.name + d.ip + (d.name != "MASTER" ? d.parent.name : "")));
+                var retId = d.id || (d.id = md5(d.name + d.ip_address + (d.name != "MASTER" ? d.parent.name : "")));
+                return retId;
             });
 
         var nodeExit = node.exit().remove();
@@ -414,7 +413,7 @@ $(function () {
                 html += '</ul>';
                 $('body').append(html);
                 d3.event.stopPropagation();
-                $('.pricing-table').on("mouseleave",function(){
+                $('.pricing-table').on("mouseleave", function () {
                     this.remove();
                 });
             });
@@ -427,14 +426,18 @@ $(function () {
 
 
         nodeEnter.append("circle")
-            .attr("r", 6)
+            .attr("r", function (d) {
+                return (d.children || d._children) ? 14 : 6;
+            })
             .style("fill", function (d) {
                 return d._children ? "blue" : "#fff";
             })
             .style("stroke-width", 3);
 
         nodeEnter.append("text")
-            .attr("x", 10)
+            .attr("x", function (d) {
+                return (d.children || d._children) ? 20 : 10;
+            })
             .attr("dy", ".35em")
             .attr("text-anchor", "start")
             .text(function (d) {
@@ -478,12 +481,12 @@ $(function () {
     }
 
     function getPos(x, y) {
-        if((y+200) > height){
-            y-= Math.abs(height - (y+200));
+        if ((y + 200) > height) {
+            y -= Math.abs(height - (y + 200));
         }
 
-        if((x+180) > width){
-            x -= Math.abs(width - (x+180));
+        if ((x + 180) > width) {
+            x -= Math.abs(width - (x + 180));
         }
 
         return {
@@ -498,6 +501,8 @@ $(function () {
         if (d.children) {
             d._children = d.children;
             d.children = null;
+            collapsed.push(d.id);
+
         } else {
             d.children = d._children;
             d._children = null;
@@ -507,12 +512,20 @@ $(function () {
     }
 
 // Collapse nodes
-    function collapse(d) {
+    function collapse(d, name) {
+        createNotif(d);
         if (d.children) {
-            d._children = d.children;
-            d._children.forEach(
-            );
-            d.children = null;
+            //console.log(d.name, name, md5(d.name + d.ip_address + (d.name != "MASTER" ? name : "")), collapsed);
+            if($.inArray(md5(d.name + d.ip_address + (d.name != "MASTER" ? name : "")), collapsed) != -1){
+                d._children = d.children;
+                d.children = null;
+            }
+            else{
+                d.children.forEach(function(f){
+                    collapse(f, d.name);
+                });
+            }
+
         }
     }
 });
