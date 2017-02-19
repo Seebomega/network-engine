@@ -31,7 +31,7 @@ $(function () {
         });
         notifs = 0;
         console.log(data);
-        collapse(data , data.name);
+        collapse(data, data.name);
         root = data;
         root.x0 = height / 2;
         root.y0 = width / 2;
@@ -104,21 +104,20 @@ $(function () {
             .transition()
             .duration(duration)
             .attr("transform", function (d) {
-                if (!d.children) {
-                    return (d.x < 180) ? "translate(0)" : "rotate(180)translate(-20)";
+                if (d.children || d._children) {
+                    return (d.x >= 180) ? "rotate(180)translate(-10)" : "translate(-50)";
                 }
                 else {
-                    return (d.x >= 180) ? "rotate(180)translate(0)" : "translate(0)";
+                    return (d.x < 180) ? "translate(0)" : "rotate(180)translate(-20)";
                 }
             })
             .attr("text-anchor", function (d) {
-                if (!d.children) {
-                    return (d.x >= 180) ? "end" : "start";
+                if (d.children || d._children) {
+                    return (d.x >= 180) ? "start" : "end";
                 }
                 else {
-                    return "start";
+                    return (d.x >= 180) ? "end" : "start";
                 }
-
             });
 
         _node.select("circle")
@@ -135,7 +134,7 @@ $(function () {
             })
             .style('fill', function (d) {
                 if (d._children) {
-                    return "#000";
+                    return "#CCC";
                 }
                 else {
                     return d.docker ? "#408FBD" : "#fff";
@@ -172,21 +171,20 @@ $(function () {
             .transition()
             .duration(duration)
             .attr("transform", function (d) {
-                if (!d.children) {
-                    return (d.x < 180) ? "translate(0)" : "rotate(180)translate(-20)";
+                if (d.children || d._children) {
+                    return (d.x >= 180) ? "rotate(180)translate(-10)" : "translate(-50)";
                 }
                 else {
-                    return (d.x >= 180) ? "rotate(180)translate(0)" : "translate(0)";
+                    return (d.x < 180) ? "translate(0)" : "rotate(180)translate(-20)";
                 }
             })
             .attr("text-anchor", function (d) {
-                if (!d.children) {
-                    return (d.x >= 180) ? "end" : "start";
+                if (d.children || d._children) {
+                    return (d.x >= 180) ? "start" : "end";
                 }
                 else {
-                    return "start";
+                    return (d.x >= 180) ? "end" : "start";
                 }
-
             });
 
         _node.select("circle")
@@ -203,7 +201,7 @@ $(function () {
             })
             .style('fill', function (d) {
                 if (d._children) {
-                    return "#000";
+                    return "#CCC";
                 }
                 else {
                     return d.docker ? "#408FBD" : "#fff";
@@ -256,7 +254,7 @@ $(function () {
             })
             .style('fill', function (d) {
                 if (d._children) {
-                    return "#000";
+                    return "#CCC";
                 }
                 else {
                     return d.docker ? "#408FBD" : "#fff";
@@ -308,7 +306,7 @@ $(function () {
             })
             .style('fill', function (d) {
                 if (d._children) {
-                    return "#000";
+                    return "#CCC";
                 }
                 else {
                     return d.docker ? "#408FBD" : "#fff";
@@ -389,10 +387,15 @@ $(function () {
             .on("mouseenter", function (d) {
                 $('.pricing-table').remove();
                 var pos = getPos(parseInt(d3.event.pageX), parseInt(d3.event.pageY));
-
+                if (!d.alias) {
+                    d.alias = "";
+                }
                 var html = '<ul class="pricing-table" style="z-index:999;overflow-y:auto;max-height:250px;position:absolute;top:' + pos.y + 'px;left:' + pos.x + 'px;">';
+
+                html += '<li class="bullet-item" style="text-align:left;padding: 6px;"><b>Alias : </b>'+
+                    '<input type="text" class="alias" style="padding:0;margin:0;width: 75%;display: inline-block;" id="alias-' + d.id + '" value="' + d.alias + '" /></li>';
                 $.each(d, function (key, value) {
-                    var unwantedKeys = ["name", "parent", "children", "_children", "x", "y", "id", "depth", "x0", "y0"];
+                    var unwantedKeys = ["name", "parent", "children", "_children", "x", "y", "id", "depth", "x0", "y0", "alias"];
                     if ($.inArray(key, unwantedKeys) == -1) {
                         if (key == "docker") {
                             html += '<li class="bullet-item" style="text-align:left;padding: 6px;"><b>' + key + ' :</b> <i class="fa fa-docker fa-2x" style="color:' + (value ? "#4daf4a" : "#e41a1c") + ';vertical-align: middle;"></i></li>';
@@ -416,6 +419,12 @@ $(function () {
                 $('.pricing-table').on("mouseleave", function () {
                     this.remove();
                 });
+                $('.alias').on("keyup", function(){
+                    delay(function(){
+                        d.alias = $('.alias').val();
+                        updateAlias(d);
+                    }, 500 );
+                });
             });
 
         if (updateText) {
@@ -436,7 +445,7 @@ $(function () {
 
         nodeEnter.append("text")
             .attr("x", function (d) {
-                return (d.children || d._children) ? 20 : 10;
+                return (d.children || d._children) ? 30 : 10;
             })
             .attr("dy", ".35em")
             .attr("text-anchor", "start")
@@ -490,7 +499,7 @@ $(function () {
         }
 
         return {
-            x: x,
+            x: x + 10,
             y: y
         };
 
@@ -506,6 +515,7 @@ $(function () {
         } else {
             d.children = d._children;
             d._children = null;
+            collapsed.splice($.inArray(d.id, collapsed), 1);
         }
 
         update(d, false);
@@ -516,16 +526,51 @@ $(function () {
         createNotif(d);
         if (d.children) {
             //console.log(d.name, name, md5(d.name + d.ip_address + (d.name != "MASTER" ? name : "")), collapsed);
-            if($.inArray(md5(d.name + d.ip_address + (d.name != "MASTER" ? name : "")), collapsed) != -1){
+            if ($.inArray(md5(d.name + d.ip_address + (d.name != "MASTER" ? name : "")), collapsed) != -1) {
                 d._children = d.children;
                 d.children = null;
             }
-            else{
-                d.children.forEach(function(f){
+            else {
+                d.children.forEach(function (f) {
                     collapse(f, d.name);
                 });
             }
 
         }
     }
+
+    function updateAlias(d){
+        var posObject = {
+            remote: null,
+            iface: null,
+            host: null
+        };
+        switch (d.depth){
+            case 0:
+                console.log("MASTER");
+                break;
+            case 1:
+                posObject.remote = d.name;
+                break;
+            case 2:
+                posObject.remote = d.parent.name;
+                posObject.iface = d.name;
+                break;
+            case 3:
+                posObject.remote = d.parent.parent.name;
+                posObject.iface = d.parent.name;
+                posObject.host = d.name;
+                break;
+        }
+
+        socket.emit('update_alias', posObject, "ALIAS", d.alias);
+    }
+
+    var delay = (function(){
+        var timer = 0;
+        return function(callback, ms){
+            clearTimeout (timer);
+            timer = setTimeout(callback, ms);
+        };
+    })();
 });

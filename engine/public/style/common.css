@@ -16,3 +16,8 @@ label {
     fill: none;
     stroke: tan;
 }
+
+.alias{
+    width: 70%;
+    display: inline-block;
+}
