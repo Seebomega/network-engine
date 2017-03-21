@@ -383,7 +383,23 @@ $(function () {
         // Enter any new nodes at the parent's previous position.
         var nodeEnter = node.enter().append("g")
             .attr("class", "node")
-            .on("click", click)
+            .on("click", click);
+
+        if (updateText) {
+            node.selectAll("text")
+                .attr("transform", "rotate(0)translate(0)")
+                .attr("text-anchor", "start");
+        }
+
+
+        nodeEnter.append("circle")
+            .attr("r", function (d) {
+                return (d.children || d._children) ? 14 : 6;
+            })
+            .style("fill", function (d) {
+                return d._children ? "blue" : "#fff";
+            })
+            .style("stroke-width", 3)
             .on("mouseenter", function (d) {
                 $('.pricing-table').remove();
                 var pos = getPos(parseInt(d3.event.pageX), parseInt(d3.event.pageY));
@@ -426,22 +442,6 @@ $(function () {
                     }, 500 );
                 });
             });
-
-        if (updateText) {
-            node.selectAll("text")
-                .attr("transform", "rotate(0)translate(0)")
-                .attr("text-anchor", "start");
-        }
-
-
-        nodeEnter.append("circle")
-            .attr("r", function (d) {
-                return (d.children || d._children) ? 14 : 6;
-            })
-            .style("fill", function (d) {
-                return d._children ? "blue" : "#fff";
-            })
-            .style("stroke-width", 3);
 
         nodeEnter.append("text")
             .attr("x", function (d) {
