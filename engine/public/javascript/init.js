@@ -2,6 +2,15 @@
  * Created by omega on 2/8/17.
  */
 $(function () {
+
+    $(window).resize(function(){
+        width = $(window).width(),
+        height = coef * $(window).height(),
+        root.x0 = height / 2,
+        root.y0 = width / 2;
+        update(root, true);
+    });
+
     var coef = 0.95,
         width = $(window).width(),
         height = coef * $(window).height();
@@ -68,7 +77,7 @@ $(function () {
                 }
             }
 
-            var html = '<div data-alert class="alert-box ' + notifClass + ' round" style="min-width:280px;position:absolute;display:block;top:' + 55 * currentNotif + 'px;right:0;z-index:-1">' +
+            var html = '<div data-alert class="alert-box ' + notifClass + ' round" style="padding:4px;min-width:280px;position:absolute;display:block;top:' + 30 * currentNotif + 'px;right:0;z-index:-1">' +
                 message +
                 '<a href="#" class="close">&times;</a>' +
                 '</div>';
