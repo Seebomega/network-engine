@@ -40,7 +40,7 @@ Now you have the Master node on `http://localhost`
 
 Configure the Network-remote see: https://github.com/Seebomega/network-remote
 
-Get the Master Token from the `options.json` and register your remotes with `docker exec -ti network-remote register $MASTERTOKEN`
+Set the Master Token in the `options.json` and register your remotes with `docker exec -ti network-remote register $MASTERTOKEN`
 
 
 
