@@ -12,7 +12,7 @@ Set aliases to your hosts/nodes.
 
 ## How it works
 
-See remote Project (http://link) for more precise explaination.
+See remote Project (https://github.com/Seebomega/network-remote) for more precise explaination.
 
 Remote are `docker-compose up` in differents sub-nets or you can mount different interfaces in different sub-nets.
 After that, the remote can ask `arp -scan` to see your differents machines connected.
@@ -38,7 +38,7 @@ Exec: `docker-compose up`
 
 Now you have the Master node on `http://localhost`
 
-Configure the Network-remote see: http://Link
+Configure the Network-remote see: https://github.com/Seebomega/network-remote
 
 Get the Master Token from the `options.json` and register your remotes with `docker exec -ti network-remote register $MASTERTOKEN`
 
