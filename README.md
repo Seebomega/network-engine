@@ -26,7 +26,7 @@ You can modify the pulling request of remotes
 
 ## Installation
 
-Pull the project.
+Pull the project. `git clone https://github.com/Seebomega/network-engine.git`
 
 Edit the `docker-compose.yml` file as you wish (80 Port require `privileged: true`) and volume the file for configuration:
 
