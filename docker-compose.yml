@@ -12,4 +12,3 @@ services:
     network_mode: "bridge"
     volumes:
       - "./engine/data:/data/engine/data"
-      - "./engine/public:/data/engine/public"
