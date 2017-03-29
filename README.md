@@ -1,5 +1,10 @@
 [logo]: http://img15.hostingpics.net/pics/344966example.png "example"
 
+## Features
+* Aliases
+* configuration for pop-up messages
+* Tests
+
 ## Synopsis
 
 Network-Engine aggregates data from remotes and produces an awesome web visualization for your network.
